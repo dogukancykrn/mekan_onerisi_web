@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users Tablosu - Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        .info {
+            background: #e0e7ff;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            color: #3730a3;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            text-align: center;
+            color: #6b7280;
+            font-size: 1.1rem;
+            padding: 2rem;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .count-badge {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .no-users {
+            text-align: center;
+            padding: 3rem;
+            color: #6b7280;
+        }
+
+        @media (max-width: 768px) {
+            table {
+                font-size: 0.875rem;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👥 Users Tablosu <span id="userCount" class="count-badge">0</span></h1>
+        
+        <div class="info">
+            <strong>ℹ️ Bilgi:</strong> Bu sayfa veritabanındaki tüm kullanıcıları gösterir. 
+            Güvenlik nedeniyle şifreler gösterilmez (hash'lenmiş haldedir).
+        </div>
+
+        <button onclick="loadUsers()" id="refreshBtn">
+            🔄 Yenile
+        </button>
+
+        <div id="content">
+            <div class="loading">Yükleniyor...</div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3001/api';
+
+        async function loadUsers() {
+            const contentDiv = document.getElementById('content');
+            const refreshBtn = document.getElementById('refreshBtn');
+            const countBadge = document.getElementById('userCount');
+
+            try {
+                refreshBtn.disabled = true;
+                contentDiv.innerHTML = '<div class="loading">Yükleniyor...</div>';
+
+                const response = await fetch(`${API_URL}/admin/users`);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Bir hata oluştu');
+                }
+
+                countBadge.textContent = data.count;
+
+                if (data.users.length === 0) {
+                    contentDiv.innerHTML = `
+                        <div class="no-users">
+                            <h2>😔 Henüz kayıtlı kullanıcı yok</h2>
+                            <p>Lütfen önce kayıt olun veya giriş yapın.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const tableHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Email</th>
+                                <th>Ad Soyad</th>
+                                <th>Kayıt Tarihi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.users.map(user => `
+                                <tr>
+                                    <td>${user.id}</td>
+                                    <td>${user.email}</td>
+                                    <td>${user.name}</td>
+                                    <td>${new Date(user.created_at).toLocaleString('tr-TR')}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+
+                contentDiv.innerHTML = tableHTML;
+
+            } catch (error) {
+                contentDiv.innerHTML = `
+                    <div class="error">
+                        <strong>❌ Hata:</strong> ${error.message}
+                        <br><br>
+                        <small>Server'ın çalıştığından emin olun: <strong>http://localhost:3001</strong></small>
+                    </div>
+                `;
+                countBadge.textContent = '0';
+            } finally {
+                refreshBtn.disabled = false;
+            }
+        }
+
+        // Sayfa yüklendiğinde otomatik yükle
+        loadUsers();
+    </script>
+</body>
+</html>
