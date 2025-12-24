@@ -3,10 +3,8 @@
     {
       "source": "/api/auth/:path*",
       "destination": "/api/auth"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
     }
-  ]
+  ],
+  "cleanUrls": true,
+  "trailingSlash": false
 }
