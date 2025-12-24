@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "Mekân Uygunluk Takip Backend API",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "start": "node index.js",
-    "dev": "node index.js"
+    "dev": "node index.js",
+    "build": "echo 'No build required'"
   },
   "keywords": ["express", "sqlite", "jwt", "api"],
   "author": "",
