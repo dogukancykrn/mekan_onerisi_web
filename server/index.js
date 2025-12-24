@@ -6,11 +6,14 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
 const app = express();
-const PORT = 3001;
-const JWT_SECRET = 'mekan-uygunluk-secret-key-2025'; // Production'da environment variable kullanın
+const PORT = process.env.PORT || 3001;
+const JWT_SECRET = process.env.JWT_SECRET || 'mekan-uygunluk-secret-key-2025';
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  credentials: true
+}));
 app.use(express.json());
 
 // SQLite Database
