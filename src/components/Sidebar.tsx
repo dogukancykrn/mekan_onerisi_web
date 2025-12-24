@@ -6,9 +6,7 @@ export function Sidebar() {
       </div>
 
       <nav className="sidebar-nav">
-        <a href="/" className="sidebar-link">Dashboard</a>
         <a href="#campaigns" className="sidebar-link">Kampanyalar</a>
-        <a href="#info" className="sidebar-link">Bilgi</a>
       </nav>
 
       <div className="sidebar-footer">

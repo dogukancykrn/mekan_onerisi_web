@@ -29,5 +29,12 @@ export function getCampaigns(): Campaign[] {
       description: 'Yeni kullanıcılar için 1 hafta ücretsiz deneme + %25 indirim.',
       url: 'https://ofiszone.example'
     }
+    ,{
+      id: 'c4',
+      company: 'WorkBistro',
+      discount: '%10 İndirim',
+      description: 'Öğle arası hızlı çalışma paketi - %10 indirim ve ücretsiz çorba.',
+      url: 'https://workbistro.example'
+    }
   ];
 }
