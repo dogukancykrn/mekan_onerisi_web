@@ -2,13 +2,42 @@ import { useAuth } from '../context/AuthContext';
 import { useSpaceMonitoring } from '../hooks/useSpaceMonitoring';
 import { SpaceCard } from '../components/SpaceCard';
 import { SensorChart } from '../components/SensorChart';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../App.css';
 
 export function DashboardPage() {
   const { user, logout } = useAuth();
   const { spaces, isMonitoring } = useSpaceMonitoring();
   const [selectedSpaceId, setSelectedSpaceId] = useState<string | null>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstallButton, setShowInstallButton] = useState(false);
+
+  useEffect(() => {
+    // PWA install prompt'u yakala
+    const handler = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallButton(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handler);
+
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    
+    if (outcome === 'accepted') {
+      console.log('✅ Kullanıcı PWA yükledi');
+    }
+    
+    setDeferredPrompt(null);
+    setShowInstallButton(false);
+  };
 
   const selectedSpace = spaces.find(s => s.id === selectedSpaceId);
 
@@ -24,6 +53,24 @@ export function DashboardPage() {
             </p>
           </div>
           <div className="user-section">
+            {showInstallButton && (
+              <button 
+                className="install-button" 
+                onClick={handleInstallClick}
+                style={{
+                  marginRight: '1rem',
+                  padding: '0.5rem 1rem',
+                  background: '#10b981',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontWeight: '600'
+                }}
+              >
+                📱 Telefona Yükle
+              </button>
+            )}
             <div className="user-info">
               <span className="user-name">👤 {user?.name}</span>
               <button className="logout-button" onClick={logout}>
