@@ -20,15 +20,29 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Docker volume'da kalıcı olması için
-const dbPath = process.env.DB_PATH || path.join(__dirname, 'data', 'database.sqlite');
+// Render.com için in-memory SQLite (production) veya dosya tabanlı (local)
+const dbPath = process.env.NODE_ENV === 'production' 
+  ? ':memory:'  // Render.com'da RAM'de
+  : path.join(__dirname, 'data', 'database.sqlite');  // Local'de dosyada
 
-// Data klasörünü oluştur
+// Data klasörünü oluştur (sadece local için)
 const fs = require('fs');
-const dataDir = path.join(__dirname, 'data');
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
+if (process.env.NODE_ENV !== 'production') {
+  const dataDir = path.join(__dirname, 'data');
+  if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+  }
 }
+
+// SQLite Database
+const db = new sqlite3.Database(dbPath, (err) => {
+  if (err) {
+    console.error('Veritabanı bağlantı hatası:', err);
+  } else {
+    console.log('✅ SQLite veritabanına bağlanıldı');
+    initDatabase();
+  }
+});
 
 // Veritabanı tablosunu oluştur
 function initDatabase() {
