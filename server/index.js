@@ -11,11 +11,22 @@ const JWT_SECRET = process.env.JWT_SECRET || 'mekan-uygunluk-secret-key-2025';
 
 // Middleware
 app.use(cors({
-  origin: [
-    'http://localhost:5173', 
-    'https://mekan-onerisi-web-jxm9.vercel.app',
-    process.env.FRONTEND_URL
-  ].filter(Boolean),
+  origin: function(origin, callback) {
+    // Vercel preview URL'lerini ve production'ı kabul et
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'https://mekan-onerisi-web-jxm9.vercel.app'
+    ];
+    
+    // Vercel preview URL'leri: *.vercel.app
+    if (!origin || 
+        allowedOrigins.includes(origin) || 
+        origin.endsWith('.vercel.app')) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS not allowed'));
+    }
+  },
   credentials: true
 }));
 app.use(express.json());
