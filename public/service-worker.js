@@ -1,45 +1,29 @@
 const CACHE_NAME = 'mekan-takip-v1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/src/main.tsx',
-  '/src/App.tsx'
-];
 
-// Install event - cache dosyaları
+// Install: immediately take control on update
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('Cache açıldı');
-        return cache.addAll(urlsToCache);
-      })
-  );
+  self.skipWaiting();
 });
 
-// Fetch event - cache'den servis et
+// Activate: claim clients so new SW takes effect
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim());
+});
+
+// Fetch: network-first for assets, fallback to cache
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Cache'de varsa döndür, yoksa network'ten al
-        return response || fetch(event.request);
+    fetch(event.request)
+      .then((resp) => {
+        // Optionally cache successful GET responses for future
+        if (event.request.method === 'GET' && resp && resp.ok) {
+          const respClone = resp.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, respClone);
+          });
+        }
+        return resp;
       })
-  );
-});
-
-// Activate event - eski cache'leri temizle
-self.addEventListener('activate', (event) => {
-  const cacheWhitelist = [CACHE_NAME];
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
+      .catch(() => caches.match(event.request))
   );
 });
