@@ -1,5 +1,23 @@
-import React from 'react';
-import { getCampaigns } from '../services/campaigns';
+
+type Campaign = {
+  id: string;
+  company: string;
+  discount: string;
+  description?: string;
+  url?: string;
+};
+
+function getCampaigns(): Campaign[] {
+  return [
+    {
+      id: '1',
+      company: 'Örnek Şirket',
+      discount: '%20',
+      description: 'İndirim açıklaması',
+      url: '#',
+    },
+  ];
+}
 
 export function Campaigns() {
   const campaigns = getCampaigns();
