@@ -1,4 +1,7 @@
-const API_URL = 'http://localhost:3001/api';
+// Production'da aynı domain'i kullan, development'ta localhost
+const API_URL = window.location.hostname === 'localhost'
+  ? 'http://localhost:3001/api'  // Local development
+  : '/api';  // Vercel'de aynı domain
 
 export interface User {
   id: number;
