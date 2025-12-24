@@ -110,6 +110,10 @@ body {
   width: 100%;
   margin: 0 auto;
   padding: 2rem;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 1.5rem;
+  align-items: start;
 }
 
 /* Spaces Section */
@@ -338,6 +342,88 @@ body {
   font-size: 0.9rem;
 }
 
+/* Sidebar */
+.app-sidebar {
+  width: 240px;
+  background: rgba(255,255,255,0.05);
+  border-right: 1px solid rgba(255,255,255,0.06);
+  padding: 1.25rem;
+  border-radius: 0 12px 12px 0;
+  position: sticky;
+  top: 1rem;
+  height: calc(100vh - 4rem);
+}
+
+.sidebar-header h3 {
+  color: #fef3c7;
+  margin-bottom: 1rem;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.sidebar-link {
+  color: #e5e7eb;
+  text-decoration: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+}
+
+.sidebar-link:hover {
+  background: rgba(255,255,255,0.04);
+}
+
+/* Campaigns */
+.campaigns {
+  margin-top: 1rem;
+}
+
+.campaigns-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.campaign-card {
+  background: rgba(255,255,255,0.06);
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.campaign-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.campaign-badge {
+  background: #f59e0b;
+  color: #111827;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+.campaign-desc {
+  color: #d1d5db;
+  margin-bottom: 0.5rem;
+}
+
+.campaign-cta {
+  display: inline-block;
+  padding: 0.5rem 0.75rem;
+  background: #10b981;
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .app-header h1 {
@@ -352,6 +438,7 @@ body {
 
   .app-main {
     padding: 1rem;
+    grid-template-columns: 1fr;
   }
 
   .spaces-grid {
