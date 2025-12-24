@@ -11,21 +11,24 @@ const JWT_SECRET = process.env.JWT_SECRET || 'mekan-uygunluk-secret-key-2025';
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: [
+    'http://localhost:5173', 
+    'https://mekan-onerisi-web-jxm9.vercel.app',
+    process.env.FRONTEND_URL
+  ].filter(Boolean),
   credentials: true
 }));
 app.use(express.json());
 
-// SQLite Database
-const dbPath = path.join(__dirname, 'database.sqlite');
-const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) {
-    console.error('Veritabanı bağlantı hatası:', err);
-  } else {
-    console.log('✅ SQLite veritabanına bağlanıldı');
-    initDatabase();
-  }
-});
+// Docker volume'da kalıcı olması için
+const dbPath = process.env.DB_PATH || path.join(__dirname, 'data', 'database.sqlite');
+
+// Data klasörünü oluştur
+const fs = require('fs');
+const dataDir = path.join(__dirname, 'data');
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
 
 // Veritabanı tablosunu oluştur
 function initDatabase() {

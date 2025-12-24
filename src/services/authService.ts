@@ -1,7 +1,7 @@
-// Production'da aynı domain'i kullan, development'ta localhost
+// Backend URL - Render.com'da çalışan gerçek backend
 const API_URL = window.location.hostname === 'localhost'
   ? 'http://localhost:3001/api'  // Local development
-  : '/api';  // Vercel'de aynı domain
+  : 'https://mekan-backend.onrender.com/api';  // Production backend (Render.com)
 
 export interface User {
   id: number;
